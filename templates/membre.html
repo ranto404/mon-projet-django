@@ -1,0 +1,14 @@
+{% extends "Layouts/base.html" %}
+{% block container %}
+<div class="conainer">
+    <div class="row m-2">
+        <div class="card col-md-3 m-1">
+            <img src="../{{ data.photo }}" alt="" class="rounded image-fluid">
+        </div>
+        <div class="col-md-9 m-1">
+            <p class="">Pseudo : {{ data.pseudo }}</p>
+            <p class="">Email : {{ data.email }}</p>
+        </div>
+    </div>
+</div>
+{% endblock container %}

@@ -1,0 +1,197 @@
+{% extends "Layouts/base.html" %}
+{% block container %}
+<div class="container">
+        <div class="p-5">
+            <h4 class="fs-3">Prix totale :</h4>
+            <p class="total"></p>
+        </div>
+        <br>
+        <!-- <div class="row mt-3 w-100" style="margin-bottom: 5%;">
+            <a href="{% url 'stripe' %}"  class="primary-btn">Stripe</a>
+        </div> -->
+        <div class="p-5">
+            <table class="table p-2 text-center">
+                <thead>
+                    <tr>
+                        <th class="bg-secondary text-white">Nom du Produit</th>
+                        <th class="bg-secondary text-white">Quantité</th>
+                        <th class="bg-secondary text-white">Prix</th>
+                        <th class="bg-secondary text-white">Sous-total</th>
+                        <th class="bg-secondary text-white">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="item-list">
+                    <!-- Les produits seront ajoutés ici par JavaScript -->
+                </tbody>
+            </table>
+        </div>
+       <div class="row justify-content-center">
+           <div class="col-md-12">
+            <form action="{% url 'effectuer_paiement' %}" class="billing-form" method="POST" id="validationForm">
+                {% csrf_token %}
+                  <h3 class="mb-4 billing-heading"><b class="">Details de facturation</b></h3>                
+                    {% if error %}
+                      <div class="alert alert-danger hidden">
+                          {{ error }}
+                      </div>
+                    {% endif %}
+    
+                    {% if message %}
+                    <div class="info alert-info">
+                        {{ message }}
+                    </div>
+                  {% endif %}
+                  <div class="row align-items-end">
+                      <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="firstname">Prénom</label>
+                      <input type="text" class="form-control" placeholder="" id="firstname">
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="lastname">Nom</label>
+                      <input type="text" class="form-control" placeholder="" id="name" name="name">
+                    </div>
+                </div>
+    
+                    <div class="col-md-12">
+                        <div class="form-group">
+                        <label for="streetaddress">Adresse</label>
+                      <input type="text" class="form-control" placeholder="Adresse" id="adresse" name="adresse">
+                    </div>
+                    </div>
+                    <div class="w-100"></div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                        <label for="expiration-mois">Mois d'expiration</label>
+                      <input type="month" class="form-control" placeholder="" id="card-expiry-month">
+                    </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="expiration-annee">Année d'expiration</label>
+                      <input type="number" class="form-control" placeholder="" id="card-expiry-year">
+                    </div>
+                    </div>
+                    <div class="w-100"></div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                          <label for="card-name">Nom du carte</label>
+                        <input type="text" class="form-control" placeholder=""  id="card-name">
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="card-number">Numero de carte</label>
+                      <input type="text" class="form-control" placeholder=""  id="card-number">
+                    </div>
+                  </div>
+                  <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="cvc">cvc</label>
+                      <input type="text" class="form-control" placeholder="" id="card-cvc">
+                    </div>
+                </div>
+                <div class="w-100"></div>
+                <div class="col-md-12">
+                  <input type="hidden" name="stripeToken" id="tokenkey">
+                  <input type="hidden" name="prixtotal" value="" class="prixFinal">
+                    <input  class="btn btn-primary border border-0" value="Payer" type="submit" id="button-pay">
+                </div>
+                </div>
+              </form>
+              <br>
+           </div>
+       </div>
+    </div>
+
+
+    <!-- <script>
+        function totale(){
+            let prix = document.querySelectorAll('.prix');
+            let total = document.querySelector('.total');
+            let number = document.querySelectorAll('#num');
+            let data = [];
+            prix.forEach(e => {
+                data.push(parseInt(e.textContent));
+            })
+            let somme = 0;
+            data.forEach((e,i)=>{
+                somme += e*parseInt(number[i].value);
+            })
+            total.textContent = somme;
+            return somme;
+        }
+        setInterval(totale,100)
+        console.log(totale);
+    </script> -->
+{% endblock container %}
+
+{% block js %}
+<script type="text/javascript">
+    console.log('juste pour tester');
+
+    if (localStorage.getItem('panier') == null) {
+        var panier = {};
+    } else {
+        var panier = JSON.parse(localStorage.getItem('panier'));
+    }
+
+    function updateProductList() {
+        let total = 0;
+        document.getElementById('item-list').innerHTML = ''; // Vider la liste existante
+
+        for (let item_id in panier) {
+            let product = panier[item_id];
+            let nom = product.name;
+            let quantite = product.quantity;
+            let prix = product.price;
+            let sousTotal = quantite * prix;
+            total += sousTotal;
+
+            // Créer la ligne pour chaque produit avec boutons pour modifier la quantité
+            let rowString = `
+                <tr id="product-${item_id}">
+                    <td>${nom}</td>
+                    <td>
+                        <button class="btn btn-light" onclick="changeQuantity('${item_id}', 'increase')">+</button>
+                        <span id="quantity-${item_id}">${quantite}</span>
+                        <button class="btn btn-light" onclick="changeQuantity('${item_id}', 'decrease')">-</button>
+                    </td>
+                    <td>${prix} €</td>
+                    <td>${sousTotal} €</td>
+                    <td class="shoping__cart__item__close" onclick="removeProduct('${item_id}')">
+                        <span class="icon_close"></span>
+                    </td>
+                </tr>
+            `;
+            document.getElementById('item-list').insertAdjacentHTML('beforeend', rowString);
+        }
+
+        document.querySelector('.total').textContent = total + ' €';
+    }
+
+    // Fonction pour changer la quantité d'un produit
+    function changeQuantity(itemId, action) {
+        if (action === 'increase') {
+            panier[itemId].quantity += 1;
+        } else if (action === 'decrease' && panier[itemId].quantity > 1) {
+            panier[itemId].quantity -= 1;
+        }
+
+        localStorage.setItem('panier', JSON.stringify(panier));
+        updateProductList();
+    }
+
+    // Fonction pour supprimer un produit du panier
+    function removeProduct(itemId) {
+        delete panier[itemId];
+        localStorage.setItem('panier', JSON.stringify(panier));
+        updateProductList();
+    }
+
+    // Mettre à jour la liste des produits lors du chargement initial
+    updateProductList();
+</script>
+{% endblock %}

@@ -1,0 +1,185 @@
+{% load static %}
+<style>
+    .product-item {
+    color: black;
+    font-size: 14px;
+    padding: 2px 8px;
+}
+</style>
+
+ 
+    <!-- BEGIN STYLE CUSTOMIZER -->
+    <div class="color-panel hidden-sm">
+      <div class="color-mode-icons icon-color"></div>
+      <div class="color-mode-icons icon-color-close"></div>
+      <div class="color-mode">
+        <p>THEME COLOR</p>
+        <ul class="inline">
+          <li class="color-red current color-default" data-style="red"></li>
+          <li class="color-blue" data-style="blue"></li>
+          <li class="color-green" data-style="green"></li>
+          <li class="color-orange" data-style="orange"></li>
+          <li class="color-gray" data-style="gray"></li>
+          <li class="color-turquoise" data-style="turquoise"></li>
+        </ul>
+      </div>
+    </div>
+    <!-- END BEGIN STYLE CUSTOMIZER --> 
+
+    <!-- BEGIN TOP BAR -->
+    <div class="pre-header">
+        <div class="container">
+            <div class="row">
+                <!-- BEGIN TOP BAR LEFT PART -->
+                <div class="col-md-6 col-sm-6 additional-shop-info">
+                    <ul class="list-unstyled list-inline">
+                        <li><i class="fa fa-phone"></i><span>+1 456 6717</span></li>
+                        <!-- BEGIN CURRENCIES -->
+                        <li class="shop-currencies">
+                            <a href="javascript:void(0);">€</a>
+                            <a href="javascript:void(0);">£</a>
+                            <a href="javascript:void(0);" class="current">$</a>
+                        </li>
+                        <!-- END CURRENCIES -->
+                        <!-- BEGIN LANGS -->
+                        <li class="langs-block">
+                            <a href="javascript:void(0);" class="current">English </a>
+                            <div class="langs-block-others-wrapper"><div class="langs-block-others">
+                              <a href="javascript:void(0);">French</a>
+                              <a href="javascript:void(0);">Germany</a>
+                              <a href="javascript:void(0);">Turkish</a>
+                            </div></div>
+                        </li>
+                        <!-- END LANGS -->
+                    </ul>
+                </div>
+                <!-- END TOP BAR LEFT PART -->
+                <!-- BEGIN TOP BAR MENU -->
+                <!-- <div> -->
+                    <!-- <ul class="list-unstyled list-inline pull-right">
+                        <li><a href="shop-account.html">My Account</a></li>
+                        <li><a href="shop-wishlist.html">My Wishlist</a></li>
+                        <li><a href="shop-checkout.html">Checkout</a></li>
+                        <li><a href="page-login.html">Log In</a></li>
+                    </ul> -->
+                    <div class="col-md-6 col-sm-6" style="text-align: right;">
+                      {% if request.session.client %}
+                      <li class="dropdown">
+                          <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">
+                              <i class="fa fa-user"></i> {{request.session.client.pseudo}}           
+                          </a>                          
+                            <ul class="dropdown-menu">
+                              <li><a href="{% url 'deconnexion' %}"><i class="fa fa-sign-out p-1"></i>Logout</a></li>
+                              <li><a href="{% url 'membre' %}"><i class="fa fa-user"></i>My account</a></li>
+                            </ul>
+                      </li>
+                      {% else %}
+                              <div class="header__top__right__auth p-1">
+                                  <a href="{% url 'connexion' %}"><i class="fa fa-user"></i>Login</a>
+                              </div>
+                              <div class="header__top__right__auth p-1">
+                                  <a href="{% url 'inscrire' %}"><i class="fa fa-user-plus"></i>Sign-up</a>
+                              </div>
+                      {% endif %}
+                    </div>
+                <!-- </div> -->
+                <!-- END TOP BAR MENU -->
+            </div>
+        </div>        
+    </div>
+    <!-- END TOP BAR -->
+
+    <!-- BEGIN HEADER -->
+    <div class="header">
+      <div class="container">
+        <a class="site-logo" href="{% url 'home' %}"><img src="assets/corporate/img/logos/logo-shop-red.png" alt="nAkATySHOP"></a>
+
+        <a href="javascript:void(0);" class="mobi-toggler"><i class="fa fa-bars"></i></a>
+
+        <!-- BEGIN CART -->
+        <div class="top-cart-block">
+          <div class="top-cart-info">
+            articles :  <span id="panier"></span>
+          </div>
+          
+          <i class="fa fa-shopping-cart"></i>
+                        
+          <div class="top-cart-content-wrapper">
+            {% if request.session.client %}
+            <div class="top-cart-content" id="paniers">
+              
+              <ul class="scroller" style="height: 250px;" id="product-list">
+                les produits affiche ici
+              </ul>
+              <div class="text-right">
+                <a href="{% url 'checkout' %}" class="btn btn-primary">voir panier</a>
+              </div>
+            </div>
+            {% endif %}
+          </div>            
+        </div>
+        <!--END CART -->
+        <!-- BEGIN CART -->
+        <div class="top-cart-block">
+          <div class="top-cart-info">
+            favorite :  <span id="favorite"></span>
+          </div>
+          
+          <i class="fa fa-heart"></i>
+                        
+          <div class="top-cart-content-wrapper">
+            {% if request.session.client %}
+            <div class="top-cart-content" id="favorites">
+              
+              <ul class="scroller" style="height: 250px;" id="product-list-favorite">
+              tous les favorites
+              </ul>
+            </div>
+            {% endif %}
+          </div>            
+        </div>
+        <!--END CART -->
+
+        <!-- BEGIN NAVIGATION -->
+        <div class="header-navigation">
+          <ul>
+            
+            <li><a href="{% url 'home' %}">Accueil</a></li>
+            <li><a href="#">A propos</a></li>
+            <li><a href="#">Contact</a></li>
+            <li class="dropdown">
+              <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">
+                Catégories 
+              </a>  
+              <ul class="dropdown-menu">
+                {% for category in categories %}
+                        <li><a href="{% url 'category_list' category.cid %}"> {{ category.title }} </a></li>
+                {% endfor %}  
+              </ul>
+            </li>
+            
+            <!-- BEGIN TOP SEARCH -->
+            <li class="menu-search">
+              <span class="sep"></span>
+              <i class="fa fa-search search-btn"></i>
+              <div class="search-box">
+                <form action="{% url 'search_list' %}" method="get">
+                  <div class="input-group">
+                    <input type="text" placeholder="Chercher" name="q" class="form-control">
+                    <span class="input-group-btn">
+                      <button class="btn btn-primary" type="submit">Search</button>
+                    </span>
+                  </div>
+                </form>
+              </div> 
+            </li>
+            <!-- END TOP SEARCH -->
+          </ul>
+        </div>
+        <!-- END NAVIGATION -->
+      </div>
+    </div>
+    <!-- Header END -->
+
+
+

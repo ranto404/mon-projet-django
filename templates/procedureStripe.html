@@ -1,0 +1,158 @@
+{% extends "Layouts/base.html" %}
+{% block 'title' %}
+    Coffee
+{% endblock 'title' %}
+{% block "contenue" %}
+<div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-12">
+          <form action="{% url 'effectuer_paiement' %}" class="billing-form" method="POST" id="validationForm">
+            {% csrf_token %}
+              <h3 class="mb-4 billing-heading">Details de facturation</h3>                
+                {% if error %}
+                  <div class="alert alert-danger hidden">
+                      {{ error }}
+                  </div>
+                {% endif %}
+
+                {% if message %}
+                <div class="info alert-info">
+                    {{ message }}
+                </div>
+              {% endif %}
+              <div class="row align-items-end">
+                  <div class="col-md-6">
+                <div class="form-group">
+                    <label for="firstname">Prénom</label>
+                  <input type="text" class="form-control" placeholder="" id="firstname">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                    <label for="lastname">Nom</label>
+                  <input type="text" class="form-control" placeholder="" id="name" name="name">
+                </div>
+            </div>
+
+                <div class="col-md-12">
+                    <div class="form-group">
+                    <label for="streetaddress">Adresse</label>
+                  <input type="text" class="form-control" placeholder="Adresse" id="adresse" name="adresse">
+                </div>
+                </div>
+                <div class="w-100"></div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                    <label for="expiration-mois">Mois d'expiration</label>
+                  <input type="month" class="form-control" placeholder="" id="card-expiry-month">
+                </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="expiration-annee">Année d'expiration</label>
+                  <input type="number" class="form-control" placeholder="" id="card-expiry-year">
+                </div>
+                </div>
+                <div class="w-100"></div>
+                <div class="col-md-12">
+                  <div class="form-group">
+                      <label for="card-name">Nom du carte</label>
+                    <input type="text" class="form-control" placeholder=""  id="card-name">
+                  </div>
+                </div>
+                <div class="col-md-12">
+                <div class="form-group">
+                    <label for="card-number">Numero de carte</label>
+                  <input type="text" class="form-control" placeholder=""  id="card-number">
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="form-group">
+                    <label for="cvc">cvc</label>
+                  <input type="text" class="form-control" placeholder="" id="card-cvc">
+                </div>
+            </div>
+            <div class="w-100"></div>
+            <div class="col-md-12">
+              <input type="hidden" name="stripeToken" id="tokenkey">
+              <input type="hidden" name="prixtotal" value="" class="prixFinal">
+                <input class="btn btn-primary" value="Payer" type="submit" id="button-pay">
+            </div>
+            </div>
+          </form>
+        <!-- END -->
+
+      </div>
+    </div>
+  </div>
+</section>
+<script src="https://js.stripe.com/v2/"></script>
+<script>
+  Stripe.setPublishableKey('pk_test_51PE40FRrpaYyrz6iH4BxGPi2bu9lztzjwC7GV2CvxECpVvRkzZvYcr1YD3aq7p9OFg2x0m11eH21qSGocXCOuwaK00PDHbMBVo'); //clé public no atao eto
+
+  let form = document.querySelector('#validationForm')
+  let submits = document.querySelector("#button-pay")
+  let Final = document.querySelector(".prixFinal")
+
+  Final.value = sessionStorage.getItem('prix')
+  console.log(Final.value);
+  submits.addEventListener("click", (e) => {
+    e.preventDefault();
+
+
+  let exp_mm_yyyy = document.querySelector("#card-expiry-month").value;
+  let mm = exp_mm_yyyy.split("-")[1];
+
+  // Désactiver les boutons pour éviter les soumissions multiples
+  let btns = document.querySelectorAll('button');
+  btns.forEach(btn => {
+      btn.disabled = true;
+  });
+
+
+  console.log(`
+    number: ${document.querySelector("#card-number").value},
+    cvc: ${document.querySelector("#card-cvc").value},
+    exp_month: ${mm},
+    exp_year: ${document.querySelector("#card-expiry-year").value},
+    name: ${document.querySelector("#card-name").value}    
+  `)
+
+
+  // Créer le token avec les informations de la carte
+  Stripe.createToken({
+      number: document.querySelector("#card-number").value,
+      cvc: document.querySelector("#card-cvc").value,
+      exp_month: mm,
+      exp_year: document.querySelector("#card-expiry-year").value,
+      name: document.querySelector("#card-name").value
+  }, stripeResponseHandler);
+});
+
+function stripeResponseHandler(status,response) {
+  // Vérifiez s'il y a une erreur dans la réponse
+  if (response.error) {
+      // Gérer les erreurs d'affichage à l'utilisateur
+      document.querySelector('#charge-error').classList.remove('hidden');
+      document.querySelector('#charge-error').textContent = response.error.message;
+
+      // Réactiver les boutons
+      let btns = document.querySelectorAll('button');
+      btns.forEach(btn => {
+          btn.disabled = false;
+      });
+  } else {
+
+    console.log(response.id);
+    
+    document.querySelector("#tokenkey").value = response.id
+     // Ou soumettez le formulaire si c'est une approche traditionnelle
+     document.querySelector("#validationForm").submit();
+  }
+}
+</script>
+
+
+
+
+{% endblock "contenue" %}

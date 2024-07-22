@@ -1,0 +1,170 @@
+{% extends "Layouts/base.html" %}
+{% block container %}
+
+
+<div class="container mt-5 p-4 product-page product-pop-up">
+    <div class="row">
+      <div class="col-md-4 col-sm-4 col-xs-3">
+        <div class="product-main-image">
+          <img src="{{ produit.image.url }}" alt="Cool green dress with red bell" class="img-responsive">
+        </div>
+        <div class="product-other-images">
+          <!-- <a href="javascript:;" class="active"><img alt="Berry Lace Dress" src="assets/pages/img/products/model3.jpg"></a>
+          <a href="javascript:;"><img alt="Berry Lace Dress" src="assets/pages/img/products/model4.jpg"></a>
+          <a href="javascript:;"><img alt="Berry Lace Dress" src="assets/pages/img/products/model5.jpg"></a> -->
+        </div>
+      </div>
+      <div class="col-md-6 col-sm-6 col-xs-9">
+        <h2> {{ produit.titre }} </h2>
+        <div class="price-availability-block clearfix">
+          <div class="price">
+            <strong><span>$</span> {{ produit.price }} </strong>
+            <em>$<span> {{ produit.old_price }} </span></em>
+          </div>
+          <div class="availability">
+            Availability: <strong> {{ produit.in_stock }} </strong>
+          </div>
+        </div>
+        <div class="description">
+          <p> {{ produit.description }} </p>
+        </div>
+        
+        {% if request.session.client %}
+          <a id="{{ produit.id }}"  class="ted btn btn-primary" data-product-name="{{ produit.titre }}" data-product-price="{{produit.price}}">Ajouter panier</a>
+        {% endif %}
+    </div>
+    <div class="review">
+      <br><br>
+        {% if request.session.client %}
+        <form action="{% url 'commenter' %}" method="post">
+        {% csrf_token %}
+        <textarea placeholder="Commenter ici" name="coms" id="" cols="30" rows="3" class="form-control mt-2" style="resize: none;"></textarea>
+        <div class="mt-2">
+            <label for="rating">Rating:</label>
+            <select name="rating" id="rating" class="form-control">
+                {% for i in "12345" %}
+                <option value="{{ i }}">{{ i }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <input type="hidden" name="id_produit" value="{{ produit.id  }}">
+        <input type="submit" value="Commenter" class="btn btn-primary mt-2">
+        </form>
+        {% if  request.method == 'POST' %}
+            {% if error %}
+                    <p class="text-danger">{{ error }}</p>
+            {% endif %}               
+        {% endif %}
+        {% endif %}   <br>
+        {% if avg_rating %}
+        <a href="javascript:;"> {{ nbcoms }} commentaires | Note pour le produit: {{ avg_rating|floatformat:1 }} ⭐</a>&nbsp;
+        {% endif %}     
+        <ul class="social-icons">
+            <li><a class="facebook" data-original-title="facebook" href="javascript:;"></a></li>
+            <li><a class="twitter" data-original-title="twitter" href="javascript:;"></a></li>
+            <li><a class="googleplus" data-original-title="googleplus" href="javascript:;"></a></li>
+            <li><a class="evernote" data-original-title="evernote" href="javascript:;"></a></li>
+            <li><a class="tumblr" data-original-title="tumblr" href="javascript:;"></a></li>
+          </ul> 
+    </div>
+    </div>
+    <div>
+    </div>
+
+      <div class="sticker sticker-sale"></div>
+      {% for x in coms %}
+        
+          <div class="testimonial_section_2">
+            <h4 class="client_name_text"> {{ x.user.Pseudo }}<span class="quick_icon"><img src="../{{x.user.photo}}" style="width: 50px;height: 50px;border-radius: 50%;object-fit: cover;"></span></h4>
+            <p class="customer_text">{{x.review}}</p>
+            <div class="rating">
+                {% if x.rating == 1 %}
+                    ⭐☆☆☆☆
+                {% elif x.rating == 2 %}
+                    ⭐⭐☆☆☆
+                {% elif x.rating == 3 %}
+                    ⭐⭐⭐☆☆
+                {% elif x.rating == 4 %}
+                    ⭐⭐⭐⭐☆
+                {% elif x.rating == 5 %}
+                    ⭐⭐⭐⭐⭐
+                {% endif %}
+            </div>
+            <br><br>
+          </div>
+        {% endfor %}
+
+    </div>
+
+     </div>
+    </div>
+
+  </div>  
+  
+{% endblock container %}
+
+{% block js %}
+<script type="text/javascript">
+// Initialiser le panier à partir du localStorage
+let panier = localStorage.getItem('panier') ? JSON.parse(localStorage.getItem('panier')) : {};
+
+// Fonction pour mettre à jour la liste des produits dans le panier
+function updateProductList() {
+    const productList = document.getElementById('product-list');
+        productList.innerHTML = ''; // Vider la liste existante
+
+        for (let item_id in panier) {
+            const product = panier[item_id];
+            const productName = product.name;
+            const quantity = product.quantity;
+            const listItem = document.createElement('li');
+            listItem.className = 'product-item'; // Ajouter la classe CSS
+            listItem.textContent = `${productName}: ${quantity}`;
+            productList.appendChild(listItem);
+        }
+}
+
+// Mettre à jour la liste des produits lors du chargement initial
+updateProductList();
+
+// Gestion du clic sur le bouton "Ajouter au panier"
+$(document).on('click', '.ted', function(){
+    console.log('ajouter');
+    var item_id = this.id.toString();
+    console.log(item_id);
+    let productName = this.getAttribute('data-product-name');
+    let productPrice = parseFloat(this.getAttribute('data-product-price'));
+
+    if (panier[item_id] != undefined) {
+        panier[item_id].quantity += 1;
+    } else {
+        panier[item_id] = {
+            name: productName,
+            quantity: 1,
+            price: productPrice
+        };
+    }
+    console.log(panier);
+    localStorage.setItem('panier', JSON.stringify(panier));
+    document.getElementById("panier").innerHTML = Object.keys(panier).length;
+
+        // Mettre à jour la liste des produits dans le panier
+        updateProductList();
+    });
+
+// Redirection vers panier.html lorsque l'utilisateur clique sur l'icône du panier
+document.addEventListener('DOMContentLoaded', function() {
+    const panierElement = document.getElementById('panier');
+    if (panierElement) {
+        panierElement.addEventListener('click', function() {
+            window.location.href = 'panier.html';
+        });
+    } else {
+        console.error("L'élément avec l'ID 'panier' n'a pas été trouvé.");
+    }
+});
+
+
+
+    </script>
+{% endblock %}
