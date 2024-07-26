@@ -195,11 +195,12 @@ class ProductReview(models.Model):
 
 
 class Wishlist(models.Model):
+    user = models.ForeignKey(Membres, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)   
     date = models.DateTimeField(auto_now_add=True)
 
     class Meta :
         verbose_name_plural = "Wishlists"
     
-    def __str__(self) :
-        return self.product.titre
+    def __str__(self):
+        return f"{self.user.Pseudo} - {self.product.titre}"

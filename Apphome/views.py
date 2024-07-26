@@ -233,3 +233,6 @@ def effectuer_paiement(request):
         # Gérer d'autres erreurs
         messages.error(request, str(e))
         return redirect('page_d_erreur')
+    
+
+    

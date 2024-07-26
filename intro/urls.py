@@ -33,7 +33,7 @@ urlpatterns = [
     path(r'checkout/',checkout,name="checkout"),
     path(r'category/<cid>',category_list_view,name="category_list"),
     path(r'vendor/',vendor_list_view,name="vendor_list"),
-    path(r'search/',search_view,name="search_list"),    
+    path(r'search/',search_view,name="search_list"),
     path("",include("AppInscription.urls")),
     path("",include("AppPanier.urls")),
 ]

@@ -106,17 +106,6 @@
           <div class="row margin-bottom-40">
             <!-- BEGIN SALE PRODUCT -->
             <div class="col-md-3">
-                <h1>Search by Price</h1>
-                <form method="get" class="mb-4">
-                    {% csrf_token %}
-                    {{ form.min_price }}
-                    <div class="form-group">
-                        <label for="range">Prix</label>
-                        <input type="range" name="range" value="{{ min_max_price.price__min|floatformat:2 }}" class="slider-range" id="range" min="{{ min_max_price.price__min }}" max="{{ min_max_price.price__max }}" oninput="max_price.value=this.value">
-                        {{ form.max_price }}
-                    </div>
-                    <button type="submit" class="btn btn-success">Filter</button>
-                </form>
         
     
                 <!-- <h2>Products</h2>
@@ -131,8 +120,8 @@
               <br><br>
               <div class="row featured__filter">
                   {% for entana in prod %}
-                  <div>
-                    <div class="product-item p-2">
+                  <div class="col-md-3 col-sm-4 col-xs-6">
+                    <div class="product-item wishlist-item p-2">
                       <div class="pi-img-wrapper">
                         <img src="{{ entana.image.url }}" class="img-responsive" alt="Berry Lace Dress">
                         <div>
@@ -143,7 +132,8 @@
                       <div class="pi-price"> {{ entana.price }} $</div>
                       <div><s>{{ entana.old_price }} $</s></div>
                       {% if request.session.client %}
-                      <a id="{{ entana.id }}"  class="ted btn btn-default add2cart" data-product-name="{{ entana.titre }}" data-product-price="{{entana.price}}">Ajouter panier</a>
+                      <a style="border: none;color: gray;" data-wish-name="{{ entana.titre }}" id="wishlist-{{ entana.id }}" class="btn btn-default add-to-wishlist"><i class="fa fa-heart"></i></a>
+                      <a id="panier-{{ entana.id }}" class="ted btn btn-default add2cart" data-product-name="{{ entana.titre }}" data-product-price="{{ entana.price }}">Ajouter au panier</a>
                       {% endif %}
                     </div>
                 </div>
@@ -157,7 +147,22 @@
             <div class="row margin-bottom-40 ">
                 <!-- BEGIN SIDEBAR -->
                 <div class="sidebar col-md-3 col-sm-4">
-                    <h2> <b>Tous</b></h2>
+
+                    <h5 style="text-align: left;">recherche par prix</h5>
+                <form method="get" class="mb-4">
+                    {% csrf_token %}
+                    {{ form.min_price }}
+                    <div class="form-group" style="text-align: left;">
+                        <label for="range">Prix</label>
+                        <input type="range" name="range" value="{{ min_max_price.price__min|floatformat:2 }}" class="slider-range" id="range" min="{{ min_max_price.price__min }}" max="{{ min_max_price.price__max }}" oninput="max_price.value=this.value"  style="border:0; color:#f6931f; font-weight:bold;">
+                        {{ form.max_price }}
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success" style="left: 0;">Filtrer</button>
+                </form>
+
+
+                    <h5  style="text-align: left;">catégories</h5>
                 <ul class="list-group margin-bottom-25 sidebar-menu">
                     {% for cat in categories %}
                     <li class="list-group-item clearfix dropdown">
@@ -176,13 +181,7 @@
                     {% endif %}
                     </li>
                     {% endfor %}
-                    <!-- <li class="list-group-item clearfix"><a href="shop-product-list.html"><i class="fa fa-angle-right"></i> Kids</a></li>
-                    <li class="list-group-item clearfix"><a href="shop-product-list.html"><i class="fa fa-angle-right"></i> Accessories</a></li>
-                    <li class="list-group-item clearfix"><a href="shop-product-list.html"><i class="fa fa-angle-right"></i> Sports</a></li>
-                    <li class="list-group-item clearfix"><a href="shop-product-list.html"><i class="fa fa-angle-right"></i> Brands</a></li>
-                    <li class="list-group-item clearfix"><a href="shop-product-list.html"><i class="fa fa-angle-right"></i> Electronics</a></li>
-                    <li class="list-group-item clearfix"><a href="shop-product-list.html"><i class="fa fa-angle-right"></i> Home & Garden</a></li>
-                    <li class="list-group-item clearfix"><a href="shop-product-list.html"><i class="fa fa-angle-right"></i> Custom Link</a></li> -->
+
                 </ul>
                 </div>
                 <!-- END SIDEBAR -->
@@ -192,7 +191,7 @@
                 <div class="owl-carousel owl-carousel3">
                     {% for product in latest_products %}
                     <div  class="latest-products">
-                    <div class="product-item product">
+                    <div class="product-item wishlist-item product">
                         <div class="pi-img-wrapper">
                         <img src="{{ product.image.url }}" class="img-responsive" alt="{{ product.titre }}">
                         <div>
@@ -204,10 +203,8 @@
                         <div class="pi-price"> {{ product.price }} </div>
                         <div><s>{{ product.old_price }} $</s></div>
                         {% if request.session.client %}
-                        <a id="{{ product.id }}" class="add-to-wishlist det" data-product-names="{{ product.titre }}">
-                            <i class="fa fa-heart"></i>
-                        </a>
-                        <a id="{{ product.id }}"  class="ted btn btn-default add2cart" data-product-name="{{ product.titre }}" data-product-price="{{product.price}}">Ajouter panier</a>
+                        <a style="font-size: 16px;color: gray;border: none;" data-wish-name="{{ product.titre }}" id="wishlist-{{ product.id }}" class="btn btn-default add-to-wishlist"><i class="fa fa-heart"></i></a>
+                        <a id="panier-{{ product.id }}" class="ted btn btn-default add2cart" data-product-name="{{ product.titre }}" data-product-price="{{ product.price }}">Ajouter au panier</a>
                         {% endif %}
                         <div class="sticker sticker-new"></div>
                     </div>
@@ -253,40 +250,69 @@
 // Initialiser le panier à partir du localStorage
 let panier = localStorage.getItem('panier') ? JSON.parse(localStorage.getItem('panier')) : {};
 
+
+// Initialiser la wishlist à partir du localStorage
+let wishlist = localStorage.getItem('wishlist') ? JSON.parse(localStorage.getItem('wishlist')) : {};
+
 // Fonction pour mettre à jour la liste des produits dans le panier
 function updateProductList() {
     const productList = document.getElementById('product-list');
+    if (productList) {
         productList.innerHTML = ''; // Vider la liste existante
 
         for (let item_id in panier) {
             const product = panier[item_id];
-            const productName = product.name;
+            const productNam = product.name;
             const quantity = product.quantity;
             const listItem = document.createElement('li');
             listItem.className = 'product-item'; // Ajouter la classe CSS
-            listItem.textContent = `${productName}: ${quantity}`;
+            listItem.textContent = `${productNam}: ${quantity}`;
             productList.appendChild(listItem);
         }
+    }
 }
 
 // Mettre à jour la liste des produits lors du chargement initial
 updateProductList();
 
+// Fonction pour mettre à jour la liste des produits dans la wishlist
+function updateWishlist() {
+    const wishlistElement = document.getElementById('product-list-favorite');
+    if (wishlistElement) {
+        wishlistElement.innerHTML = ''; // Vider la liste existante
+
+        for (let wish_id in wishlist) {
+            const product = wishlist[wish_id];
+            const productName = product.name;
+            const listItem = document.createElement('li');
+            listItem.className = 'wishlist-item'; // Ajouter la classe CSS
+            listItem.textContent = `${productName}`;
+            wishlistElement.appendChild(listItem);
+        }
+    }
+}
+
+// Mettre à jour la liste des produits dans la wishlist lors du chargement initial
+updateWishlist();
+
+
+
+
 // Gestion du clic sur le bouton "Ajouter au panier"
 $(document).on('click', '.ted', function(){
     console.log('ajouter');
-    var item_id = this.id.toString();
+    var item_id = this.id.split('-')[1].toString();
     console.log(item_id);
-    let productName = this.getAttribute('data-product-name');
-    let productPrice = parseFloat(this.getAttribute('data-product-price'));
+    let productNom = this.getAttribute('data-product-name');
+    let productPrix = parseFloat(this.getAttribute('data-product-price'));
 
     if (panier[item_id] != undefined) {
         panier[item_id].quantity += 1;
     } else {
         panier[item_id] = {
-            name: productName,
+            name: productNom,
             quantity: 1,
-            price: productPrice
+            price: productPrix
         };
     }
     console.log(panier);
@@ -296,6 +322,42 @@ $(document).on('click', '.ted', function(){
         // Mettre à jour la liste des produits dans le panier
         updateProductList();
     });
+
+
+
+// Gestion du clic sur le bouton "Ajouter à la wishlist"
+$(document).on('click', '.add-to-wishlist', function(){
+    console.log('ajouter à la wishlist');
+    var wish_id = this.id.split('-')[1].toString();
+    console.log(wish_id);
+    let productName = this.getAttribute('data-wish-name');
+
+
+    // Trouver l'icône dans le bouton cliqué
+    var icon = $(this).find('i')[0];
+
+    // Changer la couleur de l'icône en rouge ou en couleur normale
+    if (icon.style.color === 'red') {
+        icon.style.color = ''; // Réinitialiser la couleur si elle est déjà rouge
+        delete wishlist[wish_id]; // Supprimer du wishlist si déjà présent
+    } else {
+        icon.style.color = 'red'; // Changer la couleur en rouge
+        wishlist[wish_id] = {
+            name: productName
+        };
+    }
+
+    console.log(wishlist);
+    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+    
+    // Mettre à jour la liste des produits dans la wishlist
+    updateWishlist();
+});
+
+
+
+
+
 
 // Redirection vers panier.html lorsque l'utilisateur clique sur l'icône du panier
 document.addEventListener('DOMContentLoaded', function() {
@@ -317,68 +379,6 @@ document.getElementById('max_price').value = this.value;
 document.getElementById('max_price').addEventListener('input', function() {
 document.getElementById('range').value = this.value;
 });
-
-$(document).on("click", ".add-to-wishlist", function(){
-    let product_id = $(this).attr("data-product-item")
-    let this_val = $(this)
-
-    console.log("product ID IS", product_id);
-    
-
-    updateProductList();
-});
-
-
-
-
-
-let favorite = localStorage.getItem('favorite') ? JSON.parse(localStorage.getItem('favorite')) : {};
-
-// Fonction pour mettre à jour la liste des produits dans le favorite
-function updateProductListFavorite() {
-    const productList = document.getElementById('product-list-favorite');
-        productList.innerHTML = ''; // Vider la liste existante
-
-        for (let item_id in favorite) {
-            const product = favorite[item_id];
-            const productName = product.name;
-            const quantity = product.quantity;
-            const listItem = document.createElement('li');
-            listItem.className = 'product-item'; // Ajouter la classe CSS
-            listItem.textContent = `${productName}: ${quantity}`;
-            productList.appendChild(listItem);
-        }
-}
-
-// Mettre à jour la liste des produits lors du chargement initial
-updateProductListFavorite();
-
-// Gestion du clic sur le bouton "Ajouter au panier"
-$(document).on('click', '.det', function(){
-    console.log('ajouter');
-    var item_id = this.id.toString();
-    console.log(item_id);
-    let productName = this.getAttribute('data-product-names');
-
-    if (favorite[item_id] != undefined) {
-        favorite[item_id].quantity += 1;
-    } else {
-        favorite[item_id] = {
-            name: productName,
-            quantity: 0,
-
-
-        };
-    }
-    console.log(favorite);
-    localStorage.setItem('favorite', JSON.stringify(favorite));
-    document.getElementById("favorite").innerHTML = Object.keys(favorite).length;
-
-        // Mettre à jour la liste des produits dans le panier
-        updateProductListFavorite();
-    });
-
-
 
 
 

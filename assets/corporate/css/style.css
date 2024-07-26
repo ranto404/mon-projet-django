@@ -850,6 +850,9 @@ body.page-header-fixed {
 .product-list .product-item {
 	margin-bottom: 30px;
 }
+.product-list-favorite .wishlist-item {
+	margin-bottom: 30px;
+}
 
 /***
 Sidebar
@@ -1272,6 +1275,7 @@ steps block and steps block elements
 	top: 15px;
 	position: relative;
 }
+
 
 /* 500 page */
 .corporate .page-500 {

@@ -98,12 +98,41 @@
 
         <!-- BEGIN CART -->
         <div class="top-cart-block">
+
+          <div class="top-cart-info">
+            favories  <span id="wishlist"></span>
+          </div>
+
+            <i class="fa fa-heart" style="font-size: 16px;background: #44b1c1;color: #fff;position: absolute; right: 0px;top: 0;padding: 8px 8px 7px; border-radius: 16px;"></i>
+
+          <div class="top-cart-content-wrapper">
+            {% if request.session.client %}
+            <div class="top-cart-content" id="wishlists">
+              
+              <ul class="scroller" style="height: 250px;" id="product-list-favorite">
+                <!-- Liste des favoris -->
+                favorites
+              </ul>
+    
+            </div>
+            {% endif %}
+          </div>
+
+        </div>
+
+
+
+
+        <div class="top-cart-block">
+
+          
+
           <div class="top-cart-info">
             articles :  <span id="panier"></span>
           </div>
-          
+        
           <i class="fa fa-shopping-cart"></i>
-                        
+          
           <div class="top-cart-content-wrapper">
             {% if request.session.client %}
             <div class="top-cart-content" id="paniers">
@@ -114,26 +143,6 @@
               <div class="text-right">
                 <a href="{% url 'checkout' %}" class="btn btn-primary">voir panier</a>
               </div>
-            </div>
-            {% endif %}
-          </div>            
-        </div>
-        <!--END CART -->
-        <!-- BEGIN CART -->
-        <div class="top-cart-block">
-          <div class="top-cart-info">
-            favorite :  <span id="favorite"></span>
-          </div>
-          
-          <i class="fa fa-heart"></i>
-                        
-          <div class="top-cart-content-wrapper">
-            {% if request.session.client %}
-            <div class="top-cart-content" id="favorites">
-              
-              <ul class="scroller" style="height: 250px;" id="product-list-favorite">
-              tous les favorites
-              </ul>
             </div>
             {% endif %}
           </div>            
