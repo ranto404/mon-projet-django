@@ -2,56 +2,106 @@
 
 {% load static %}
 {% block container %}
-<!-- BARRE DE RECHERCHE -->
-<section class="hero">
+
+
+
+<div class="container">
+    <ul class="breadcrumb">
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Pages</a></li>
+        <li class="#">Contact</li>
+    </ul>
+    <!-- BEGIN SIDEBAR & CONTENT -->
+    <div class="row margin-bottom-40">
+      <!-- BEGIN SIDEBAR -->
+      <div class="sidebar col-md-3 col-sm-3">
+        <ul class="list-group margin-bottom-25 sidebar-menu">
+          <li class="list-group-item clearfix"><a href="javascript:;"><i class="fa fa-angle-right"></i> Login/Register</a></li>
+          <li class="list-group-item clearfix"><a href="javascript:;"><i class="fa fa-angle-right"></i> Restore Password</a></li>
+          <li class="list-group-item clearfix"><a href="javascript:;"><i class="fa fa-angle-right"></i> My account</a></li>
+          <li class="list-group-item clearfix"><a href="javascript:;"><i class="fa fa-angle-right"></i> Address book</a></li>
+          <li class="list-group-item clearfix"><a href="javascript:;"><i class="fa fa-angle-right"></i> Wish list</a></li>
+          <li class="list-group-item clearfix"><a href="javascript:;"><i class="fa fa-angle-right"></i> Returns</a></li>
+          <li class="list-group-item clearfix"><a href="javascript:;"><i class="fa fa-angle-right"></i> Newsletter</a></li>
+        </ul>
     
-    <div class="title-wrapper">
-        <div class="container"><div class="container-inner">
-          <h1><span>nombre({{prod.count}})</span> {{category.name}}</h1>
-          <em>Les produits de haute qualité avec garrantie</em>
+        <h2>Our Contacts</h2>
+        <address>
+          35, Lorem Lis Street, Park Analamanga<br>
+          Madagascar, MG<br>
+          <abbr title="Phone">P:</abbr> 020 23 000 23<br>
+        </address>
+        <address>
+          <strong>Email</strong><br>
+          <a href="#">info@Nakaty.com</a><br>
+          <a href="#">supportNakatyShop.com</a>
+        </address>
+        <ul class="social-icons margin-bottom-10">
+          <li><a href="javascript:;" data-original-title="facebook" class="facebook"></a></li>
+          <li><a href="javascript:;" data-original-title="github" class="github"></a></li>
+          <li><a href="javascript:;" data-original-title="Goole Plus" class="googleplus"></a></li>
+          <li><a href="javascript:;" data-original-title="linkedin" class="linkedin"></a></li>
+          <li><a href="javascript:;" data-original-title="rss" class="rss"></a></li>
+        </ul>
       </div>
-</section>
+      <!-- END SIDEBAR -->
     
-
-
-<section class="featured spad">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="section-title">
-                    <h2>produit {{category.name}}</h2>
-                </div>
-                <div class="featured__controls">
-                    <ul>
-                        <li class="active" data-filter="*">{{categories.title}}</li>
-                        
-                    </ul>
-                </div>
-            </div>
+      <!-- BEGIN CONTENT -->
+      <div class="col-md-9 col-sm-9">
+        <h1>Contact</h1>
+        <div class="content-page">
+            <h1><span>nombre({{prod.count}})</span> {{category.name}}</h1>
+            <em>Les produits de haute qualité avec garrantie</em>
+    
+            <p>Lorem ipsum dolor sit amet, Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat consectetuer adipiscing elit, sed diam nonummy nibh euismod tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</p>          
         </div>
+
+
         <div class="row featured__filter">
             {% for entana in prod %}
-            <div class="col-lg-3 col-md-4 col-sm-6 mix oranges fresh-meat p-2">
-                <div class="featured__item">
-                    <div class="featured__item__pic set-bg" data-setbg="{{ entana.image.url }}">
-                        <ul class="featured__item__pic__hover">
-                            <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                            <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                            <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                        </ul>
+            <div class="col-md-3 col-sm-4 col-xs-6">
+                <div class="product-item wishlist-item p-2">
+                    <div class="pi-img-wrapper">
+                        <img src="{{ entana.image.url }}" class="img-responsive" alt="{{ entana.titre }}">
+                        <div>
+                            <a href="{% url 'detail' entana.id %}" class="btn btn-default fancybox-fast-view">View</a>
+                        </div>
                     </div>
-                    <div class="featured__item__text">
-                        <h6><a href="#">{{entana.titre}}</a></h6>
-                        <h5 style="display: inline;">{{entana.price}} $</h5>
-                        <a><s>{{entana.old_price}} $</s>.</a>
-                    </div>
-                    <a href="{% url 'detail' entana.id %}" class="btn btn-success justify_content_center">Voir plus</a>
+                    <h3><a href="{% url 'detail' entana.id %}">{{ entana.titre }}</a></h3>
+                    <div class="pi-price">{{ entana.price }} $</div>
+                    <div><s>{{ entana.old_price }} $</s></div>
+                    
+                    {% if request.session.client %}
+                
+                    <a id="panier-{{ entana.id }}" class="ted btn btn-default add2cart" data-product-name="{{ entana.titre }}" data-product-price="{{ entana.price }}">Ajouter au panier</a>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}
         </div>
+
+
     </div>
-</section>
+      <!-- END CONTENT -->
+    </div>
+    <!-- END SIDEBAR & CONTENT -->
+    
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         var bgElements = document.querySelectorAll('.set-bg');

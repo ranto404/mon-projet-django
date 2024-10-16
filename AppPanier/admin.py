@@ -1,15 +1,7 @@
 from django.contrib import admin
-from .models import Order
+from .models import Transaction
 
-# Register your models here.
+class TransactionAdmin(admin.ModelAdmin):
+    list_display = ['customer_name', 'adresse', 'amount', 'stripe_charge_id']
 
-
-
-class OrderAdmin(admin.ModelAdmin):
-    list_display = ['name', 'adresse', 'amount', 'charge_id']
-
-
-
-admin.site.register(Order, OrderAdmin)
-
-
+admin.site.register(Transaction, TransactionAdmin)

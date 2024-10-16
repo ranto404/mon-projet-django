@@ -2,6 +2,9 @@ from django.db import models
 from shortuuid.django_fields import ShortUUIDField
 from AppInscription.models import Membres
 from django.utils.html import mark_safe
+from  django.core.validators import EmailValidator
+from django import forms
+
 
 # Create your models here.
 
@@ -63,9 +66,6 @@ class Vendor(models.Model):
     image = models.ImageField(upload_to="static/img/user_directory_path", default="vendor.jpg")
     description = models.TextField(null=True, blank=True, default="I am amazing vendor")
 
-    title = models.CharField(max_length=100)
-    image = models.ImageField(upload_to="static/img/category")
-    description = models.TextField(null=True, blank=True)
     adresse = models.TextField(max_length=100, default="123 Main Tree")
     contacte = models.TextField(max_length=100, default="+123 (456) 789")
     chat_resp_time = models.TextField(max_length=100, default="100")
@@ -96,6 +96,8 @@ class Product(models.Model):
     image = models.ImageField(upload_to="static/img/prods")
     price = models.DecimalField(max_digits=999999999999, decimal_places=2, default="0.00")
     old_price = models.DecimalField(max_digits=999999999999, decimal_places=2, default="0.00")
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
+
     
     product_status = models.CharField(max_length=255, choices=STATUS,  default="in_review")
 
@@ -204,3 +206,31 @@ class Wishlist(models.Model):
     
     def __str__(self):
         return f"{self.user.Pseudo} - {self.product.titre}"
+    
+
+
+
+class ContactForm(forms.Form):
+    nom = forms.CharField(
+        max_length=100,
+        label='Nom',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'id': 'name',
+        })
+    )
+    email = forms.EmailField(
+        label='Email',
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'id': 'email',
+        })
+    )
+    message = forms.CharField(
+        label='Message',
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 8,
+            'id': 'message',
+        })
+    )

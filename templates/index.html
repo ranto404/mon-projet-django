@@ -105,36 +105,30 @@
           <!-- BEGIN SALE PRODUCT & NEW ARRIVALS -->
           <div class="row margin-bottom-40">
             <!-- BEGIN SALE PRODUCT -->
-            <div class="col-md-3">
-        
-    
-                <!-- <h2>Products</h2>
-                <ul>
-                    {% for product in prod %}
-                        <li>{{ product.titre }}: ${{ product.price }}</li>
-                    {% endfor %}
-                </ul> -->
-              </div>
             <div class="col-md-12 sale-product text-center">
               <h2><b>Ensemble Produits</b></h2>
+              <p>Total de produits : {{ prod|length }}</p>
+
               <br><br>
               <div class="row featured__filter">
-                  {% for entana in prod %}
-                  <div class="col-md-3 col-sm-4 col-xs-6">
+                {% for entana in prod %}
+                <div class="col-md-3 col-sm-4 col-xs-6">
                     <div class="product-item wishlist-item p-2">
-                      <div class="pi-img-wrapper">
-                        <img src="{{ entana.image.url }}" class="img-responsive" alt="Berry Lace Dress">
-                        <div>
-                          <a href="{% url 'detail' entana.id %}" class="btn btn-default fancybox-fast-view">View</a>
+                        <div class="pi-img-wrapper">
+                            <img src="{{ entana.image.url }}" class="img-responsive" alt="{{ entana.titre }}">
+                            <div>
+                                <a href="{% url 'detail' entana.id %}" class="btn btn-default fancybox-fast-view">View</a>
+                            </div>
                         </div>
-                      </div>
-                      <h3><a href="shop-item.html"> {{ entana.titre }} </a></h3>
-                      <div class="pi-price"> {{ entana.price }} $</div>
-                      <div><s>{{ entana.old_price }} $</s></div>
-                      {% if request.session.client %}
-                      <a style="border: none;color: gray;" data-wish-name="{{ entana.titre }}" id="wishlist-{{ entana.id }}" class="btn btn-default add-to-wishlist"><i class="fa fa-heart"></i></a>
-                      <a id="panier-{{ entana.id }}" class="ted btn btn-default add2cart" data-product-name="{{ entana.titre }}" data-product-price="{{ entana.price }}">Ajouter au panier</a>
-                      {% endif %}
+                        <h3><a href="{% url 'detail' entana.id %}">{{ entana.titre }}</a></h3>
+                        <div class="pi-price">{{ entana.price }} $</div>
+                        <div><s>{{ entana.old_price }} $</s></div>
+                        {% if request.session.client %}
+                        <a style="border: none;color: gray;" data-wish-name="{{ entana.titre }}" id="wishlist-{{ entana.id }}" class="btn btn-default add-to-wishlist">
+                            <i class="fa fa-heart"></i>
+                        </a>
+                        <a id="panier-{{ entana.id }}" class="ted btn btn-default add2cart" data-product-name="{{ entana.titre }}" data-product-price="{{ entana.price }}">Ajouter au panier</a>
+                        {% endif %}
                     </div>
                 </div>
                 {% endfor %}
@@ -148,21 +142,21 @@
                 <!-- BEGIN SIDEBAR -->
                 <div class="sidebar col-md-3 col-sm-4">
 
-                    <h5 style="text-align: left;">recherche par prix</h5>
+                    <h5 style="text-align: left;"><b>recherche par prix</b> </h5>
                 <form method="get" class="mb-4">
                     {% csrf_token %}
                     {{ form.min_price }}
                     <div class="form-group" style="text-align: left;">
-                        <label for="range">Prix</label>
+                        <label for="range"></label>
                         <input type="range" name="range" value="{{ min_max_price.price__min|floatformat:2 }}" class="slider-range" id="range" min="{{ min_max_price.price__min }}" max="{{ min_max_price.price__max }}" oninput="max_price.value=this.value"  style="border:0; color:#f6931f; font-weight:bold;">
                         {{ form.max_price }}
                     </div>
                     
-                    <button type="submit" class="btn btn-success" style="left: 0;">Filtrer</button>
+                    <button type="submit" class="btn btn-success" style="left: 0; width: 100%; ">Filtrer</button>
                 </form>
+                </br>
 
-
-                    <h5  style="text-align: left;">catégories</h5>
+                <h5  style="text-align: left;"> <b>tous les catégories</b></h5>
                 <ul class="list-group margin-bottom-25 sidebar-menu">
                     {% for cat in categories %}
                     <li class="list-group-item clearfix dropdown">
@@ -195,7 +189,6 @@
                         <div class="pi-img-wrapper">
                         <img src="{{ product.image.url }}" class="img-responsive" alt="{{ product.titre }}">
                         <div>
-                            <a href="" class="btn btn-default fancybox-button">Zoom</a>
                             <a href="{% url 'detail' product.id %}" class="btn btn-default fancybox-fast-view">View</a>
                         </div>
                         </div>
@@ -203,7 +196,6 @@
                         <div class="pi-price"> {{ product.price }} </div>
                         <div><s>{{ product.old_price }} $</s></div>
                         {% if request.session.client %}
-                        <a style="font-size: 16px;color: gray;border: none;" data-wish-name="{{ product.titre }}" id="wishlist-{{ product.id }}" class="btn btn-default add-to-wishlist"><i class="fa fa-heart"></i></a>
                         <a id="panier-{{ product.id }}" class="ted btn btn-default add2cart" data-product-name="{{ product.titre }}" data-product-price="{{ product.price }}">Ajouter au panier</a>
                         {% endif %}
                         <div class="sticker sticker-new"></div>
@@ -216,8 +208,57 @@
                 <!-- END CONTENT -->
             </div>
           <!-- END SIDEBAR & CONTENT -->
-
-          
+            <!-- BEGIN TWO PRODUCTS & PROMO -->
+        <div class="row margin-bottom-35 ">
+            <!-- BEGIN TWO PRODUCTS -->
+        <div class="col-md-6 two-items-bottom-items">
+        
+            <h2>Veuillez visiter nos vendeurs !</h2>
+        
+            <p style="text-align: justify; padding: 20px;">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Explicabo totam quas cupiditate natus ipsa hic possimus cumque quisquam nobis a. Consectetur blanditiis suscipit, voluptatibus itaque delectus ea facilis ab eaque, recusandae vero eos, provident fugiat. Corrupti veniam excepturi dignissimos quibusdam? Lorem ipsum dolor sit, amet consectetur adipisicing elit. Corrupti exercitationem error molestias, non soluta corporis ducimus dolore veritatis facilis inventore! Lorem ipsum dolor sit amet consectetur adipisicing elit. Amet quasi beatae necessitatibus atque corrupti voluptatum unde at consequatur aspernatur veritatis.</p>
+        </div>
+        <!-- END TWO PRODUCTS -->
+  
+            <!-- BEGIN PROMO -->
+            <div class="col-md-6 shop-index-carousel">
+              <div class="content-slider">
+                <div id="myCarousel" class="carousel slide" data-ride="carousel">
+                  <!-- Indicators -->
+                  <ol class="carousel-indicators">
+                    {% for vendor in vendors %}
+                        <li data-target="#myCarousel" data-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}"></li>
+                    {% endfor %}
+                 </ol>
+                 <div class="carousel-inner">
+                    {% for vendor in vendors %}
+                        <div class="item {% if forloop.first %}active{% endif %}">
+                            <img src="{{ vendor.image.url }}" class="img-responsive" alt="{{ vendor.title }}">
+                            <div class="carousel-caption">
+                                <h3>{{ vendor.title }}</h3>
+                                <p>{{ vendor.description }}</p>
+                                <a href="{% url 'vendor_detail' vendor.id %}" class="btn btn-default">Voir Vendeur</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <!-- Controls -->
+                <a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+                </div>
+              </div>
+            </div>
+            <!-- END PROMO -->
+          </div>        
+          <!-- END TWO PRODUCTS & PROMO -->
+        </div>
+      </div>
+            
 
           </div>
         </div>
@@ -226,17 +267,6 @@
 
 <!-- BARRE DE RECHERCHE -->
 
-
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        var bgElements = document.querySelectorAll('.set-bg');
-        bgElements.forEach(function(el) {
-            var bg = el.getAttribute('data-setbg');
-            el.style.backgroundImage = 'url(' + bg + ')';
-        });
-    });
-</script>
 
 <div id="topcontrol" title="Scoll Back to Top" style="position: fixed; bottom: 10px;">
 
@@ -275,7 +305,7 @@ function updateProductList() {
 // Mettre à jour la liste des produits lors du chargement initial
 updateProductList();
 
-// Fonction pour mettre à jour la liste des produits dans la wishlist
+// Fonction pour mettre à jour la liste des produits dans le wishlist
 function updateWishlist() {
     const wishlistElement = document.getElementById('product-list-favorite');
     if (wishlistElement) {
@@ -331,7 +361,8 @@ $(document).on('click', '.add-to-wishlist', function(){
     var wish_id = this.id.split('-')[1].toString();
     console.log(wish_id);
     let productName = this.getAttribute('data-wish-name');
-
+    let productPrice = parseFloat(this.getAttribute('data-wish-price'));
+    let productPic = this.getAttribute('data-wish-picture'); // Extraire l'URL de l'image
 
     // Trouver l'icône dans le bouton cliqué
     var icon = $(this).find('i')[0];
@@ -343,13 +374,16 @@ $(document).on('click', '.add-to-wishlist', function(){
     } else {
         icon.style.color = 'red'; // Changer la couleur en rouge
         wishlist[wish_id] = {
-            name: productName
+            name: productName,
+            price: productPrice,
+            picture: productPic
         };
     }
 
     console.log(wishlist);
     localStorage.setItem('wishlist', JSON.stringify(wishlist));
-    
+    // document.getElementById("wishlist").innerHTML = Object.keys(wishlist).length;
+
     // Mettre à jour la liste des produits dans la wishlist
     updateWishlist();
 });
@@ -359,7 +393,7 @@ $(document).on('click', '.add-to-wishlist', function(){
 
 
 
-// Redirection vers panier.html lorsque l'utilisateur clique sur l'icône du panier
+// Redirection vers panier.html lorsque l'utilisateur clique sur le bouton voir panier
 document.addEventListener('DOMContentLoaded', function() {
     const panierElement = document.getElementById('panier');
     if (panierElement) {
@@ -368,6 +402,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     } else {
         console.error("L'élément avec l'ID 'panier' n'a pas été trouvé.");
+    }
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const wishlistElement = document.getElementById('wishlist');
+    if (wishlistElement) {
+        wishlistElement.addEventListener('click', function(event) {
+            event.preventDefault(); // Prévenir le comportement par défaut du lien
+            window.location.href = 'wishlist.html'; // Redirection vers l'URL de la wishlist
+        });
+    } else {
+        console.error("L'élément avec l'ID 'wishlist' n'a pas été trouvé.");
     }
 });
 

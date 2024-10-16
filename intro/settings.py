@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 import os
+# from decouple import config, Csv
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -21,12 +23,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent # Hafantarana oe dossier paren
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-7)fs*emwm8*wkpf6sp^=*qj)cipy23x+v&tff-)85p51t8isxe'
+SECRET_KEY = 'django-insecure-8z0&iium2s150s0)%$1##q57iwbey9%qcng==4119%!ev4f2)2'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["192.168.88.9","127.0.0.1"]
+
 
 
 # Application definition
@@ -145,6 +148,14 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+# configuration mailtrap
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True  # que ce paramètre est défini
+EMAIL_HOST_USER = 'rakotoarisoarantonyaina@gmail.com'  # nom d'utilisateur Mailtrap
+EMAIL_HOST_PASSWORD = 'rzkh dmkp lemh psbf'  # mot de passe Mailtrap (celui masqué ici)
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER 
 
 JAZZMIN_SETTINGS = {
     "site_title": "Library Shop",
@@ -155,7 +166,7 @@ JAZZMIN_SETTINGS = {
 
 
 
-# Stripe settings
-STRIPE_SECRET_KEY = 'your_secret_key_here'
-STRIPE_PUBLISHABLE_KEY = 'your_publishable_key_here'
 
+
+
+# EMAIL CONFIGURATION

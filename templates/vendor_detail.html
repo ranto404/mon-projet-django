@@ -1,0 +1,68 @@
+{% extends "Layouts/base.html" %}
+
+{% load static %}
+{% block container %}
+
+
+    <div class="container">
+
+            <div class="col-md-6 col-sm-6 col-xs-3">
+              <div class="product-main-image">
+                <img src="{{ vendor.image.url }}" alt="Cool green dress with red bell" class="img-responsive">
+              </div>
+              <div class="product-other-images">
+                <!-- <a href="javascript:;" class="active"><img alt="Berry Lace Dress" src="assets/pages/img/products/model3.jpg"></a>
+                <a href="javascript:;"><img alt="Berry Lace Dress" src="assets/pages/img/products/model4.jpg"></a>
+                <a href="javascript:;"><img alt="Berry Lace Dress" src="assets/pages/img/products/model5.jpg"></a> -->
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4 col-xs-9">
+              <h2> {{ vendor.title }} </h2>
+              <div class="price-availability-block clearfix">
+                <div class="price">
+                  <strong><span></span> {{ vendor.adresse }} </strong>
+                  <span> {{ vendor.contacte }} </span>
+                </div>
+                <div class="availability">
+                  favorie: <strong> {{ vendor.authentic_rating }} </strong>
+                  <p> {{ vendor.warranty_period }} </p>
+                </div>
+              </div>
+              <div class="description">
+                <p> {{ vendor.description }} </p>
+              </div>
+      
+              
+            </div>
+            <div class="col-md-12 sale-product text-center">
+              <h4><b>voici nos produits</b></h4>
+              <br>
+              <div class="row featured__filter">
+                  {% for entana in products %}
+                  <div class="col-md-3 col-sm-4 col-xs-6">
+                  <div class="product-item wishlist-item p-2">
+                      <div class="pi-img-wrapper">
+                      <img src="{{ entana.image.url }}" class="img-responsive" alt="Berry Lace Dress">
+                      <div>
+                          <a href="{% url 'detail' entana.id %}" class="btn btn-default fancybox-fast-view">View</a>
+                      </div>
+                      </div>
+                      <h3><a href="shop-item.html"> {{ entana.titre }} </a></h3>
+                      <div class="pi-price"> {{ entana.price }} $</div>
+                      <div><s>{{ entana.old_price }} $</s></div>
+                      {% if request.session.client %}
+                      <a style="border: none;color: gray;" data-wish-name="{{ entana.titre }}" id="wishlist-{{ entana.id }}" class="btn btn-default add-to-wishlist"><i class="fa fa-heart"></i></a>
+                      <a id="panier-{{ entana.id }}" class="ted btn btn-default add2cart" data-product-name="{{ entana.titre }}" data-product-price="{{ entana.price }}">Ajouter au panier</a>
+                      {% endif %}
+                  </div>
+              </div>
+              {% endfor %}
+          
+          <div>
+          </div>
+
+      
+    </div>
+   
+
+{% endblock container %}

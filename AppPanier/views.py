@@ -1,9 +1,13 @@
 import os
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from AppInscription.models import Membres
+from AppPanier.models import Transaction
 from Apphome.models import CardOrder, Product, CardOrderItems
-from .models import Order
 from django.views.decorators.csrf import csrf_exempt
+from decimal import Decimal
+from django.contrib.auth.decorators import login_required
+
 import stripe
 from dotenv import load_dotenv
 
@@ -13,41 +17,47 @@ load_dotenv()
 
 stripe.api_key = os.environ.get("SECRET_KEY")
 
-
-@csrf_exempt
+# @csrf_exempt
+# @login_required
 def effectuer_paiement(request):
-    if request.method == 'POST':
-        total_prix = request.POST.get("prixtotal")
+    if request.method == "POST":
+        if "client" not in request.session:
+            # Rediriger l'utilisateur vers la page de connexion s'il n'est pas connecté
+            return redirect('pageconnexion')
+        
+        client = request.session["client"]
         token = request.POST.get("stripeToken")
-        print([token,total_prix])
+        total_prix = request.POST.get("prixtotal")
+        
         try:
             # Créer une charge avec Stripe en utilisant le token
             charge = stripe.Charge.create(
-                amount=int(total_prix) * 100,
+                amount=int(float(total_prix) * 100),  # Convertir en cents
                 currency="usd",
                 source=token,
-                description="Test payment avec django"
+                description="Test paiement avec django stripe"
             )
             
+            # Enregistrer les informations de paiement dans la base de données
+            CardOrder.objects.create(
+                user=Membres.objects.get(pk=client["id"]),
+                price=float(total_prix),
+                paid_status=True
+            )
             
+            # Sauvegarder les articles de la commande si nécessaire
             
-            # Si la charge est réussie, afficher un message de succès
+            # Afficher un message de succès
             return render(request, "procedureStripe.html", {"message": "Paiement réussi !"})
         except stripe.error.StripeError as e:
             error = "Une erreur s'est produite lors du traitement de votre paiement. Veuillez réessayer plus tard."
             return render(request, "procedureStripe.html", {"error": error})
     else:
         error = "Une erreur s'est produite lors du traitement de votre paiement. Veuillez réessayer plus tard."
-        return render(request, "procedureStripe.html", {"error": error})
+        return render(request, "procedureStripe.html")
 
 
 
-
-
-
-
-def success_paypal(request):
-    return render(request, "success-payement.html")
 
 
 def panier(request, pid):

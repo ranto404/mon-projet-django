@@ -33,6 +33,10 @@
           <a id="{{ produit.id }}"  class="ted btn btn-primary" data-product-name="{{ produit.titre }}" data-product-price="{{produit.price}}">Ajouter panier</a>
         {% endif %}
     </div>
+
+    </div>
+    <div>
+    </div>
     <div class="review">
       <br><br>
         {% if request.session.client %}
@@ -59,7 +63,7 @@
         {% if avg_rating %}
         <a href="javascript:;"> {{ nbcoms }} commentaires | Note pour le produit: {{ avg_rating|floatformat:1 }} ⭐</a>&nbsp;
         {% endif %}     
-        <ul class="social-icons">
+        <ul class="social-icons" style="border-radius:50px;">
             <li><a class="facebook" data-original-title="facebook" href="javascript:;"></a></li>
             <li><a class="twitter" data-original-title="twitter" href="javascript:;"></a></li>
             <li><a class="googleplus" data-original-title="googleplus" href="javascript:;"></a></li>
@@ -67,10 +71,6 @@
             <li><a class="tumblr" data-original-title="tumblr" href="javascript:;"></a></li>
           </ul> 
     </div>
-    </div>
-    <div>
-    </div>
-
       <div class="sticker sticker-sale"></div>
       {% for x in coms %}
         

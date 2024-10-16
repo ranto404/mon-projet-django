@@ -1,0 +1,10 @@
+{% extends "Layouts/base.html" %}
+{% block container %}
+<div class="container">
+    <div class="p-5">
+        <h1 class="text-success">Paiement réussi !</h1>
+        <p>Merci pour votre achat. Votre transaction a été complétée avec succès.</p>
+        <a href="{% url 'home' %}" class="btn btn-primary">Retourner à l'accueil</a>
+    </div>
+</div>
+{% endblock container %}

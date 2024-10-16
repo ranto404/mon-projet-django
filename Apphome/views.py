@@ -1,4 +1,4 @@
-from datetime import timezone
+from datetime import datetime, timezone
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 import requests
@@ -8,7 +8,7 @@ from AppInscription.models import Membres
 from .form import PriceSearchForm, ProductReviewForm
 
 # Importena ilay table
-from .models import Category, Product, Vendor, ProductReview, Cart
+from .models import Category, ContactForm,Product, Vendor, ProductReview, Cart, Wishlist
 from django.views.decorators.http import require_POST
 import stripe
 from .models import CardOrder
@@ -17,19 +17,22 @@ from django.db.models import Min, Max
 from django.contrib import messages
 from django.db.models import Avg
 from django.utils import timezone
+from django.core.mail import send_mail
+from django.utils.timezone import now  # Utilisez timezone.now() pour la date actuelle
+from django.core.mail import send_mail
 
 
 
 
 
-stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 # Create your views here.
 
 def home(request):
     categories = Category.objects.filter(parent__isnull=True).prefetch_related('products', 'children', 'children__products')
-    products = Product.objects.filter(product_status="published", featured=True)
+    products = Product.objects.filter(product_status="published")
+    vendors = Vendor.objects.all()[:5]  # Limitez le nombre de vendeurs si nécessaire
 
     # Récupérer les 3 derniers produits ajoutés
     latest_products = Product.objects.order_by('-id')[:3]
@@ -49,6 +52,7 @@ def home(request):
         'latest_products': latest_products,
         'form' : form,
         'min_max_price': min_max_price,
+        'vendors': vendors,
 
     }
 
@@ -145,9 +149,20 @@ def detail(request,x):
 def vendor_list_view(request):
     vendor = Vendor.objects.all()
     data = {
-        "vendor" : vendor,
+        "vendors" : vendor,
     }
     return render(request,"vendor_list.html", data)
+
+
+def vendor_detail(request, vendor_id):
+    vendor = Vendor.objects.get(id=vendor_id)        
+    products = Product.objects.filter(vendor=vendor)  # Récupère tous les produits du vendeur
+
+    data = {
+        "vendor" : vendor,
+        "products": products,
+    }
+    return render(request,"vendor_detail.html", data)
 
 
 def search_view(request):
@@ -181,58 +196,97 @@ def checkout(request):
     cart = request.session.get('cart', [])
     return render(request, "panier.html", {"cart": cart})
 
+def wishlist_view(request):
+    # Récupérer la wishlist de la session
+    wishlist = request.session.get('wishlist', [])
+    return render(request, "wishlist.html", {"wishlist": wishlist})
 
-@require_POST
-def effectuer_paiement(request):
-    nom = request.POST.get('nom')
-    adresse = request.POST.get('adresse')
-    mois_exp = request.POST.get('card-expiry-month')
-    annee_exp = request.POST.get('card-expiry-year')
-    nom_carte = request.POST.get('card-name')
-    numero_carte = request.POST.get('card-number')
-    cvc = request.POST.get('card-cvc')
-    prixtotal = request.POST.get('prixtotal')
 
-    try:
-        # Créer la charge Stripe
-        charge = stripe.Charge.create(
-            amount=int(float(prixtotal) * 100),  # Convertir le montant en cents
-            currency='eur',
-            source=numero_carte,
-            description='Paiement pour commande',
-            metadata={
-                'nom': nom,
-                'adresse': adresse,
-                'mois_exp': mois_exp,
-                'annee_exp': annee_exp,
-                'nom_carte': nom_carte,
-                'cvc': cvc,
-            }
+
+
+def contact_view(request):
+    """ This view help to create and account for testing sending mails"""
+    data = {}
+    if request.method == "POST":
+        nom = request.POST['nom']
+        email = request.POST['email']
+        message = request.POST['message']
+        
+        # Sujet de l'email
+        subject = f"Nouveau message de {nom}"
+        
+        # Corps du message
+        email_message = f"Nom: {nom}\nEmail: {email}\n\nMessage:\n{message}"
+        
+        # Envoi de l'email
+        send_mail(
+            subject,
+            email_message,
+            settings.EMAIL_HOST_USER,  # Expéditeur (Mailtrap)
+            ['rakotoarisoarantonyaina@gmail.com'],  # Destinataire(s)
+            fail_silently=False,
         )
+        data = {
+        "nom": nom,
+        "message": message,
+        "email": email,
+        "msg": "Votre message a été envoyé avec succès.",
 
-        # Enregistrer la commande dans la base de données
-        order = CardOrder.objects.create(
-            nom=nom,
-            adresse=adresse,
-            prix_total=prixtotal,
-            # Ajoutez d'autres champs de modèle si nécessaire
-        )
+    }
+        return render(request, 'contact.html', data)
+    else:
+        return render(request, 'contact.html', data)
+        
+        
+        
+# @require_POST
+# def effectuer_paiement(request):
+#     nom = request.POST.get('nom')
+#     adresse = request.POST.get('adresse')
+#     mois_exp = request.POST.get('card-expiry-month')
+#     annee_exp = request.POST.get('card-expiry-year')
+#     nom_carte = request.POST.get('card-name')
+#     numero_carte = request.POST.get('card-number')
+#     cvc = request.POST.get('card-cvc')
+#     prixtotal = request.POST.get('prixtotal')
 
-        messages.success(request, 'Paiement effectué avec succès!')
+#     try:
+#         # Créer la charge Stripe
+#         charge = stripe.Charge.create(
+#             amount=int(float(prixtotal) * 100),  # Convertir le montant en cents
+#             currency='eur',
+#             source=numero_carte,
+#             description='Paiement pour commande',
+#             metadata={
+#                 'nom': nom,
+#                 'adresse': adresse,
+#                 'mois_exp': mois_exp,
+#                 'annee_exp': annee_exp,
+#                 'nom_carte': nom_carte,
+#                 'cvc': cvc,
+#             }
+#         )
 
-        return redirect('page_de_confirmation')  # Rediriger vers une page de confirmation
+#         # Enregistrer la commande dans la base de données
+#         order = CardOrder.objects.create(
+#             nom=nom,
+#             adresse=adresse,
+#             prix_total=prixtotal,
+#             # Ajoutez d'autres champs de modèle si nécessaire
+#         )
 
-    except stripe.error.CardError as e:
-        # Si la carte est refusée, afficher une erreur
-        body = e.json_body
-        err = body.get('error', {})
-        messages.error(request, f"{err.get('message')} Code d'erreur: {err.get('code')}")
-        return redirect('page_d_erreur')  # Rediriger vers une page d'erreur
+#         messages.success(request, 'Paiement effectué avec succès!')
 
-    except Exception as e:
-        # Gérer d'autres erreurs
-        messages.error(request, str(e))
-        return redirect('page_d_erreur')
-    
+#         return redirect('page_de_confirmation')  # Rediriger vers une page de confirmation
 
-    
+#     except stripe.error.CardError as e:
+#         # Si la carte est refusée, afficher une erreur
+#         body = e.json_body
+#         err = body.get('error', {})
+#         messages.error(request, f"{err.get('message')} Code d'erreur: {err.get('code')}")
+#         return redirect('page_d_erreur')  # Rediriger vers une page d'erreur
+
+#     except Exception as e:
+#         # Gérer d'autres erreurs
+#         messages.error(request, str(e))
+

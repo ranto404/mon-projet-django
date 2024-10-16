@@ -1,0 +1,13 @@
+<!-- cancel.html -->
+{% extends 'Layouts/base.html' %}
+{% block container %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h1>Paiement annulé</h1>
+            <p>Votre paiement a été annulé. Veuillez réessayer.</p>
+            <a href="{% url 'panier' %}">Retourner au panier</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

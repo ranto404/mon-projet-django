@@ -17,12 +17,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path,include
 
-from Apphome.views import checkout, home,detail, category_list_view, insertComs, vendor_list_view, search_view
+from Apphome.views import checkout, contact_view, home,detail, category_list_view, insertComs, vendor_list_view, vendor_detail, search_view, wishlist_view
 from . import settings
 from django.conf.urls.static import static
 
 
 urlpatterns = [
+
     path('admin/', admin.site.urls),
     # r = rowstring 
     # path(r vide, nom_anle_page_ho_sokafana)
@@ -33,10 +34,16 @@ urlpatterns = [
     path(r'checkout/',checkout,name="checkout"),
     path(r'category/<cid>',category_list_view,name="category_list"),
     path(r'vendor/',vendor_list_view,name="vendor_list"),
+    path(r'vendor/<int:vendor_id>',vendor_detail,name="vendor_detail"),
     path(r'search/',search_view,name="search_list"),
+    path(r'wishlist/', wishlist_view, name='wishlist'),
+    path(r'contact/', contact_view, name='contact'),
+
+
     path("",include("AppInscription.urls")),
     path("",include("AppPanier.urls")),
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root= settings.STATIC_ROOT)
+

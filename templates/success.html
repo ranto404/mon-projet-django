@@ -1,0 +1,13 @@
+<!-- success.html -->
+{% extends 'Layouts/base.html' %}
+{% block container %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h1>Paiement réussi</h1>
+            <p>Merci pour votre achat ! Votre paiement a été traité avec succès.</p>
+            <a href="{% url 'panier' %}">Retourner au panier</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
